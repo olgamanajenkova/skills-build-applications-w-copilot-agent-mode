@@ -1,11 +1,14 @@
-import mongoose from "mongoose";
+import "../models/user.js";
+import "../models/team.js";
+import "../models/activity.js";
+import "../models/workout.js";
+import "../models/leaderboard.js";
 import { User } from "../models/user.js";
 import { Team } from "../models/team.js";
 import { Activity } from "../models/activity.js";
 import { Workout } from "../models/workout.js";
 import { Leaderboard } from "../models/leaderboard.js";
-
-const mongoUri = process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/octofit_db";
+import { connectDatabase, disconnectDatabase } from "../config/database.js";
 
 const users = [
   { name: "Ava Carter", email: "ava.carter@example.com", team: "Blue Sharks" },
@@ -96,8 +99,8 @@ const leaderboard = [
 const seedDatabase = async () => {
   console.log("Seed the octofit_db database with test data");
 
-  await mongoose.connect(mongoUri);
-  console.log("Connected to MongoDB at", mongoUri);
+  await connectDatabase();
+  console.log("Connected to MongoDB");
 
   await Promise.all([
     User.deleteMany({}),
@@ -140,7 +143,7 @@ const seedDatabase = async () => {
   console.log("Seed complete: users", createdUsers.length, "teams", createdTeams.length);
   console.log("Seed complete: workouts", workouts.length, "activities", activityDocs.length, "leaderboard", leaderboardDocs.length);
 
-  await mongoose.disconnect();
+  await disconnectDatabase();
   console.log("Disconnected from MongoDB");
 };
 

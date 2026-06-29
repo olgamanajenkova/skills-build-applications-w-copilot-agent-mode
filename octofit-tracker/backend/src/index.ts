@@ -1,6 +1,6 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
+import { connectDatabase } from "./config/database.js";
 import { User } from "./models/user.js";
 import { Team } from "./models/team.js";
 import { Activity } from "./models/activity.js";
@@ -9,7 +9,6 @@ import { Leaderboard } from "./models/leaderboard.js";
 
 const app = express();
 const port = Number(process.env.PORT || 8000);
-const mongoUri = process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/octofit_db";
 const codespaceName = process.env.CODESPACE_NAME;
 const baseUrl = codespaceName
   ? `https://${codespaceName}-8000.app.github.dev`
@@ -53,8 +52,8 @@ app.get(["/api/workouts", "/api/workouts/"], async (_, res) => {
 
 const startServer = async () => {
   try {
-    await mongoose.connect(mongoUri);
-    console.log("Connected to MongoDB at", mongoUri);
+    await connectDatabase();
+    console.log("Connected to MongoDB");
   } catch (error) {
     console.error("MongoDB connection failed; ensure mongod is running on port 27017.", error);
     process.exit(1);
