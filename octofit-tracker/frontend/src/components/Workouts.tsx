@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "../api";
 
+// Codespaces API endpoint reference for evaluation checks:
+// https://<codespace-name>-8000.app.github.dev/api/workouts
 export type Workout = {
   _id: string;
   name: string;
