@@ -1,65 +1,70 @@
-import { useEffect, useState } from "react";
-import { fetchConfig, type AppConfig } from "./api";
+import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import Activities from "./components/Activities";
+import Leaderboard from "./components/Leaderboard";
+import Teams from "./components/Teams";
+import Users from "./components/Users";
+import Workouts from "./components/Workouts";
 
 function App() {
-  const [config, setConfig] = useState<AppConfig | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [usersCount, setUsersCount] = useState<number | null>(null);
-  const [activitiesCount, setActivitiesCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetchConfig()
-      .then(setConfig)
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    if (!config) return;
-
-    const fetchUsers = async () => {
-      const response = await fetch(`/api/users`);
-      const data = await response.json();
-      setUsersCount(data.count ?? null);
-    };
-
-    const fetchActivities = async () => {
-      const response = await fetch(`/api/activities`);
-      const data = await response.json();
-      setActivitiesCount(data.count ?? null);
-    };
-
-    fetchUsers().catch((err) => setError(err.message));
-    fetchActivities().catch((err) => setError(err.message));
-  }, [config]);
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `nav-link${isActive ? " active" : ""}`;
 
   return (
-    <main>
-      <h1>OctoFit Tracker</h1>
-      <p>React 19 + Vite frontend running on port 5173.</p>
-      <section>
-        <h2>Backend Configuration</h2>
-        {error ? (
-          <p style={{ color: "red" }}>Error loading config: {error}</p>
-        ) : config ? (
-          <div>
-            <p>
-              <strong>API Base URL:</strong> {config.apiBaseUrl}
-            </p>
-            <p>
-              <strong>Codespace Name:</strong> {config.codespaceName ?? "none"}
-            </p>
-          </div>
-        ) : (
-          <p>Loading config…</p>
-        )}
-      </section>
+    <BrowserRouter>
+      <main className="container py-4">
+        <header className="mb-4">
+          <h1>OctoFit Tracker</h1>
+          <p className="text-muted">React 19 + Vite frontend with client-side routing.</p>
+        </header>
 
-      <section>
-        <h2>Usage Summary</h2>
-        <p>Registered users: {usersCount ?? "loading..."}</p>
-        <p>Logged activities: {activitiesCount ?? "loading..."}</p>
-      </section>
-    </main>
+        <nav>
+          <ul className="nav nav-tabs">
+            <li className="nav-item">
+              <NavLink end to="/" className={navLinkClass}>
+                Home
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/users" className={navLinkClass}>
+                Users
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/activities" className={navLinkClass}>
+                Activities
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/teams" className={navLinkClass}>
+                Teams
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/leaderboard" className={navLinkClass}>
+                Leaderboard
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/workouts" className={navLinkClass}>
+                Workouts
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+
+        <section className="mt-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/activities" element={<Activities />} />
+            <Route path="/teams" element={<Teams />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/workouts" element={<Workouts />} />
+          </Routes>
+        </section>
+      </main>
+    </BrowserRouter>
   );
 }
 
